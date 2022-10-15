@@ -1,5 +1,6 @@
 import {
   getAuth,
+  GithubAuthProvider,
   GoogleAuthProvider,
   signInWithPopup,
   signOut,
@@ -11,10 +12,12 @@ const auth = getAuth(app);
 
 function App() {
   const [user, setUser] = useState({});
+  const [gitUser, setGitUser] = useState({});
 
-  const provider = new GoogleAuthProvider();
+  const googleProvider = new GoogleAuthProvider();
+  const githubProvider = new GithubAuthProvider();
   const handkeGoogle = () => {
-    signInWithPopup(auth, provider)
+    signInWithPopup(auth, googleProvider)
       .then((result) => {
         const user = result.user;
         setUser(user);
@@ -31,18 +34,33 @@ function App() {
         setUser({});
       });
   };
+  const handleGithub = () => {
+    signInWithPopup(auth, githubProvider)
+      .then((result) => {
+        const user = result.user;
+        console.log(user);
+        setGitUser(user);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
   return (
     <div className="App">
       {user.email ? (
         <button onClick={handleSignOut}>Google Sign Out</button>
       ) : (
-        <button onClick={handkeGoogle}>Google Sign in</button>
+        <div>
+          <button onClick={handkeGoogle}>Google Sign in</button>
+          <button onClick={handleGithub}>Github Sign in</button>
+        </div>
       )}
-      {user.email && (
+      {user.uid && (
         <div>
           <h1>User name: {user.displayName}</h1>
         </div>
       )}
+      <img src={gitUser.photoURL} alt="" />
     </div>
   );
 }
